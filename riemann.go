@@ -47,6 +47,12 @@ func zeta(x complex128) complex128 {
 	return out
 }
 
+func objetivo(pReal float64, pCompleja float64) float64 {
+	var nC = complex(pReal, pCompleja)
+	var res = zeta(nC)
+	return real(res)*real(res) + imag(res)*imag(res)
+}
+
 func main() {
 	fmt.Println("Cálculo de Riemann")
 	// Ahora vamos a probar una variable global, jé
@@ -56,9 +62,8 @@ func main() {
 	// La prueba ahora será estimar al menos algún valor para el cual
 	// la función sea un cero no trivial
 
-	z := complex(-2, 3)
-	raiz := zeta(z)
-	fmt.Printf("La raíz es %v", raiz)
+	evalua := objetivo(-2, 0)
+	fmt.Printf("La evaluación es es %v", evalua)
 	// var umbral float64 = 1e-18
 	// for i := 0; i < 500000; i++ {
 	// 	if i%10000 == 0 {
