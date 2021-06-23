@@ -47,10 +47,35 @@ func zeta(x complex128) complex128 {
 	return out
 }
 
-func objetivo(pReal float64, pCompleja float64) float64 {
+func objetivo(vec [2]float64) float64 {
+	var pReal = vec[0]
+	var pCompleja = vec[1]
 	var nC = complex(pReal, pCompleja)
 	var res = zeta(nC)
 	return real(res)*real(res) + imag(res)*imag(res)
+}
+
+func gradObj(vec [2]float64, f func([2]float64) float64) [2]float64 {
+	delta := 1e-5
+	// Vamos a dar como pendiente, el promedio de la pendiente entre
+	// el punto anterior y siguiente en cada coordenada
+
+	// x_1y_1 := [2]float64{vec[0] - delta, vec[1] - delta}
+	x_1y := [2]float64{vec[0] - delta, vec[1]}
+	xy_1 := [2]float64{vec[0], vec[1] - delta}
+	// x1y1 := [2]float64{vec[0] + delta, vec[1] + delta}
+	x1y := [2]float64{vec[0] + delta, vec[1]}
+	xy1 := [2]float64{vec[0], vec[1] + delta}
+	// x1y_1 := [2]float64{vec[0] + delta, vec[1] - delta}
+	// x_1y1 := [2]float64{vec[0] - delta, vec[1] + delta}
+
+	pendx_1 := (f(vec) - f(x_1y)) / delta
+	pendx1 := (f(x1y) - f(vec)) / delta
+	pendy_1 := (f(vec) - f(xy_1)) / delta
+	pendy1 := (f(xy1) - f(vec)) / delta
+	pend := [2]float64{(pendx1 + pendx_1) / 2, (pendy1 + pendy_1) / 2}
+	return pend
+
 }
 
 func main() {
@@ -61,9 +86,11 @@ func main() {
 	// fmt.Println(test)
 	// La prueba ahora será estimar al menos algún valor para el cual
 	// la función sea un cero no trivial
-
-	evalua := objetivo(-2, 0)
-	fmt.Printf("La evaluación es es %v", evalua)
+	val := [2]float64{-2, 1}
+	evalua := objetivo(val)
+	fmt.Printf("La evaluación es es %v\n", evalua)
+	grad := gradObj(val, objetivo)
+	fmt.Printf("El gradiente es de %v", grad)
 	// var umbral float64 = 1e-18
 	// for i := 0; i < 500000; i++ {
 	// 	if i%10000 == 0 {
